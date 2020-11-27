@@ -49,14 +49,11 @@ void print(int a[][MAXM], int n, int m) {
     }
 }
 
-int main() {
-    int n, m;
-    cin >> n >> m;
-
+void solveTask2(int n, int m) {
     if (m > MAXM)
-        return -1;
+        exit(0);
 
-    int a[n][MAXM];
+    int a[MAXM][MAXM];
     initZeros(a, n, m);
 
     fillSymm(a, n, m);
@@ -66,5 +63,11 @@ int main() {
 
     fillSnake(a, n, m);
     print(a, n, m);
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    solveTask2(n, m);
     return 0;
 }

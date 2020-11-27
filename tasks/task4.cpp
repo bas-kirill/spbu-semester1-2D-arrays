@@ -24,18 +24,27 @@ void print(int a[][MAXM], int n, int m) {
     }
 }
 
-int main() {
-    int n, m;
-    cin >> n >> m;
+void swap(int *a, int *b) {
+    int *t = a;
+    b = a;
+    a = t;
+}
 
-    if (m > MAXM)
-        return -1;
+void swap(int *a, int *b, int size) {
+    for (int i = 0; i < size; ++i) {
+        swap(a[i], b[i]);
+    }
+}
 
-    int a[n][MAXM];
+void solveTask4(int n, int m) {
+    if (n > MAXM or m > MAXM)
+        exit(-1);
+
+    int a[MAXM][MAXM];
     input(a, n, m);
 
     // Сортируем по строкам
-    int sums[n];
+    int sums[MAXM];
     int idx = 0;
     for (int row = 0; row < n; ++row) {
         int sum = 0;
@@ -44,16 +53,13 @@ int main() {
         sums[idx++] = sum;
     }
 
-    for (int i = 0; i < n; ++i)
-        cout << sums[i] << ' '; cout << endl;
-
     bool flag = true;
     while (flag) {
         flag = false;
         for (int i = 0; i < n - 1; ++i) {
             if (sums[i] > sums[i + 1]) {
                 swap(sums[i], sums[i + 1]);
-                swap(a[i], a[i + 1]);
+                swap(a[i], a[i + 1], m);
 
                 flag = true;
             }
@@ -61,5 +67,11 @@ int main() {
     }
 
     print(a, n, m);
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    solveTask4(n, m);
     return 0;
 }

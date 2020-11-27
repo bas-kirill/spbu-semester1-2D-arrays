@@ -24,14 +24,11 @@ void print(int a[][MAXM], int n, int m) {
     }
 }
 
-int main() {
-    int n, m;
-    cin >> n >> m;
-
+void solveTask3(int n, int m) {
     if (m > MAXM)
-        return -1;
+        exit(0);
 
-    int a[n][MAXM];
+    int a[MAXM][MAXM];
     input(a, n, m);
 
     int sum1 = 0;
@@ -62,5 +59,11 @@ int main() {
     }
 
     cout << sum1 << ' ' << sum2;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    solveTask3(n, m);
     return 0;
 }
