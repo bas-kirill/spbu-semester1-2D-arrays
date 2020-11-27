@@ -245,12 +245,18 @@ int main() {
     cin >> n >> m;
     greeting("Input matrix: ");
     solveTask1(m, n);
+    cout << endl;
+    greeting("Input matrix: ");
     solveTask2(n, m);
+    cout << endl;
     greeting("Input matrix: ");
     solveTask3(n, m);
+    cout << endl;
     greeting("Input matrix: ");
     solveTask4(n, m);
+    cout << endl;
     greeting("Input matrix: ");
     solveTask5(n, m);
+    cout << endl;
     return 0;
 }
