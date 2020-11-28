@@ -86,10 +86,6 @@ void swap(int *a, int *b, int size) {
     }
 }
 
-void greeting(const string s) {
-    cout << s << endl;
-}
-
 void solveTask1(int m, int n) {
     int a[MAXM][MAXM], b[MAXM * MAXM];
     input(a, m, n);
@@ -240,23 +236,43 @@ void solveTask5(int n, int m) {
 }
 
 int main() {
+    int taskNumber = 1;
     int n, m;
-    greeting("Input numbers: ");
-    cin >> n >> m;
-    greeting("Input matrix: ");
-    solveTask1(m, n);
-    cout << endl;
-    greeting("Input matrix: ");
-    solveTask2(n, m);
-    cout << endl;
-    greeting("Input matrix: ");
-    solveTask3(n, m);
-    cout << endl;
-    greeting("Input matrix: ");
-    solveTask4(n, m);
-    cout << endl;
-    greeting("Input matrix: ");
-    solveTask5(n, m);
-    cout << endl;
+    switch (taskNumber) {
+        case 1:
+            cout << "Input matrix's sizes: ";
+            cin >> n >> m;
+            cout << "Input matrix's elements: " << endl;
+            solveTask1(m, n);
+            cout << endl;
+            break;
+        case 2:
+            cout << "Input matrix's sizes: ";
+            cin >> n >> m;
+            cout << "Input matrix's elements: " << endl;
+            solveTask2(n, m);
+            cout << endl;
+            break;
+        case 3:
+            cout << "Input matrix's sizes: ";
+            cin >> n >> m;
+            cout << "Input matrix's elements: " << endl;
+            solveTask3(n, m);
+            cout << endl;
+            break;
+        case 4:
+            cout << "Input matrix's sizes: ";
+            cin >> n >> m;
+            cout << "Input matrix's elements: " << endl;
+            solveTask4(n, m);
+            cout << endl;
+            break;
+        case 5:
+            cout << "Input matrix's sizes: ";
+            cin >> n >> m;
+            cout << "Input matrix's elements: " << endl;
+            solveTask5(n, m);
+            cout << endl;
+    }
     return 0;
 }
