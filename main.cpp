@@ -2,10 +2,10 @@
 #include <iomanip>
 using namespace std;
 
-const int MAXM = 100;
+const int MAXN = 100;
 
 template <typename T>
-void input(T a[][MAXM], int n, int m) {
+void input(T a[][MAXN], int n, int m) {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
             cin >> a[i][j];
@@ -14,7 +14,7 @@ void input(T a[][MAXM], int n, int m) {
 }
 
 template <typename T>
-void print(T a[][MAXM], int n, int m) {
+void print(T a[][MAXN], int n, int m) {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
             cout << setw(4) << a[i][j] << " ";
@@ -23,16 +23,17 @@ void print(T a[][MAXM], int n, int m) {
     }
 }
 
-void normalization(double a[][MAXM], int n, int m, int step) {
+void normalization(double a[][MAXN], int n, int m, int step) {
     for (int row = step; row < n; ++row) {
         double norm = a[row][step];
         for (int col = step; col < m; ++col) {
-            a[row][col] /= norm;
+            if (norm != 0)
+                a[row][col] /= norm;
         }
     }
 }
 
-void subtracting(double a[][MAXM], int n, int m, int step) {
+void subtracting(double a[][MAXN], int n, int m, int step) {
     for (int row = step + 1; row < n; ++row) {
         for (int col = step; col < m; ++col) {
             a[row][col] -= a[step][col];
@@ -40,7 +41,7 @@ void subtracting(double a[][MAXM], int n, int m, int step) {
     }
 }
 
-void gauss(double a[][MAXM], int n, int m) {
+void gauss(double a[][MAXN], int n, int m) {
     int step = 0;
     while (step < n) {
         double mx = -1;
@@ -58,7 +59,7 @@ void gauss(double a[][MAXM], int n, int m) {
     }
 }
 
-double* getAns(double a[][MAXM], int n, int m) {
+double* getAns(double a[][MAXN], int n, int m) {
     double *ans = new double[n];
     for (int row = n - 1; row >= 0; --row) {
         ans[row] = 0;
@@ -87,20 +88,27 @@ void swap(int *a, int *b, int size) {
 }
 
 void solveTask1(int m, int n) {
-    int a[MAXM][MAXM], b[MAXM * MAXM];
+    int a[MAXN][MAXN], b[MAXN * MAXN];
     input(a, m, n);
 
     for (int i = 0; i < m; ++i)
         for (int j = 0; j < n; ++j)
-            b[i * m + j] = a[i][j];
+            b[i * n + j] = a[i][j];
+
+    for (int i = 0; i < n * m; ++i)
+        cout << b[i] << ' ';
+    cout << endl;
 
     for (int i = 0; i < m * n; ++i) {
-        int row = i / m;
-        b[i] = a[row][i - m * row];
+        int row = i / n;
+        b[i] = a[row][i - n * row];
     }
+
+    for (int i = 0; i < n * m; ++i)
+        cout << b[i] << ' ';
 }
 
-void fillSymm(int a[][MAXM], int n, int m) {
+void fillSymm(int a[][MAXN], int n, int m) {
     for (int col = 0; col < m; ++col)
         a[0][col] = col + 1;
 
@@ -114,28 +122,64 @@ void fillSymm(int a[][MAXM], int n, int m) {
     }
 }
 
-void fillSnake(int a[][MAXM], int n, int m) {
-    for (int row = 0; row < n; ++row) {
-        if (row % 2 == 0)
-            for (int col = 0; col < m; ++col)
-                a[row][col] = row * n + col;
-        else
-            for (int col = m - 1; col >= 0; --col)
-                a[row][col] = row * n + (m - col - 1);
+void fillSnake(int a[][MAXN], int n, int m) {
+    // N x N
+//    for (int row = 0; row < n; ++row) {
+//        if (row % 2 == 0)
+//            for (int col = 0; col < m; ++col)
+//                a[row][col] = row * n + col;
+//        else
+//            for (int col = m - 1; col >= 0; --col)
+//                a[row][col] = row * n + (m - col - 1);
+//    }
+
+    int currentNumber = 0;
+    int row = 0, col = 0;
+    int currentDir = 1;
+    while (row != n - 1 or col != m - 1) {
+        if (currentDir == 1 && col == m - 1) {
+            a[row][col] = currentNumber++;
+            if (row < n)
+                ++row;
+            a[row][col] = currentNumber++;
+            --col;
+            currentDir = 2;
+            continue;
+        }
+
+        if (currentDir == 2 && col == 0) {
+            a[row][col] = currentNumber++;
+            if (row < n)
+                ++row;
+            a[row][col] = currentNumber++;
+            ++col;
+            currentDir = 1;
+            continue;
+        }
+
+        if (currentDir == 1) {
+            a[row][col++] = currentNumber++;
+        }
+
+        if (currentDir == 2) {
+            a[row][col--] = currentNumber++;
+        }
     }
+
+    a[n - 1][m - 1] = currentNumber;
 }
 
-void initZeros(int a[][MAXM], int n, int m) {
+void initZeros(int a[][MAXN], int n, int m) {
     for (int i = 0; i < n; ++i)
         for (int j = 0; j < m; ++j)
             a[i][j] = 0;
 }
 
 void solveTask2(int n, int m) {
-    if (m > MAXM)
+    if (m > MAXN)
         exit(0);
 
-    int a[MAXM][MAXM];
+    int a[MAXN][MAXN];
     initZeros(a, n, m);
 
     fillSymm(a, n, m);
@@ -148,36 +192,42 @@ void solveTask2(int n, int m) {
 }
 
 void solveTask3(int n, int m) {
-    if (m > MAXM)
-        exit(0);
+    if (m > MAXN)
+        exit(-1);
 
-    int a[MAXM][MAXM];
+    int a[MAXN][MAXN];
     input(a, n, m);
 
     int sum1 = 0;
     for (int i = 0; i < n; ++i) {
         if (i <= n / 2) {
-            for (int j = i; j < m - i; ++j)
+            for (int j = i; j < m - i; ++j) {
                 sum1 += a[i][j];
+            }
         } else {
-            for (int j = i - n/2; j < m - (i - n/2); ++j)
+            int shift = i - n/2;
+            for (int j = n/2 - shift; j <= n/2 + shift; ++j) {
                 sum1 += a[i][j];
+            }
         }
     }
-
+    cout << endl;
     int sum2 = 0;
     int shift = n/2;
     for (int i = 0; i < n; ++i) {
-        if (shift > 0) {
-            for (int j = shift; j < (m - shift); ++j) {
+        if (i <= n/2) {
+            for (int j = shift; j <= n/2 + i; ++j) {
                 sum2 += a[i][j];
             }
             --shift;
         } else {
+            if (shift < 0)
+                shift = 0;
+            ++shift;
             for (int j = shift; j < (m - shift); ++j) {
                 sum2 += a[i][j];
             }
-            ++shift;
+
         }
     }
 
@@ -186,14 +236,20 @@ void solveTask3(int n, int m) {
 
 
 void solveTask4(int n, int m) {
-    if (n > MAXM or m > MAXM)
+    if (n > MAXN or m > MAXN)
         exit(-1);
 
-    int a[MAXM][MAXM];
-    input(a, n, m);
+    int **a = (int**) malloc(n * sizeof(int*));
+
+    for (int i = 0; i < n; ++i) {
+        a[i] = (int*) malloc(m * sizeof(int));
+        for (int j = 0; j < m; ++j) {
+            cin >> a[i][j];
+        }
+    }
 
     // Сортируем по строкам
-    int sums[MAXM];
+    int sums[MAXN];
     int idx = 0;
     for (int row = 0; row < n; ++row) {
         int sum = 0;
@@ -215,14 +271,19 @@ void solveTask4(int n, int m) {
         }
     }
 
-    print(a, n, m);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < m; ++j) {
+            cout << a[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
 
 void solveTask5(int n, int m) {
-    if (m > MAXM)
+    if (m > MAXN)
         exit(-1);
 
-    double a[MAXM][MAXM];
+    double a[MAXN][MAXN];
     input(a, n, m);
     print(a, n, m);
     gauss(a, n, m);
