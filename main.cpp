@@ -297,43 +297,45 @@ void solveTask5(int n, int m) {
 }
 
 int main() {
-    int taskNumber = 1;
     int n, m;
-    switch (taskNumber) {
-        case 1:
-            cout << "Input matrix's sizes: ";
-            cin >> n >> m;
-            cout << "Input matrix's elements: " << endl;
-            solveTask1(m, n);
-            cout << endl;
-            break;
-        case 2:
-            cout << "Input matrix's sizes: ";
-            cin >> n >> m;
-            cout << "Input matrix's elements: " << endl;
-            solveTask2(n, m);
-            cout << endl;
-            break;
-        case 3:
-            cout << "Input matrix's sizes: ";
-            cin >> n >> m;
-            cout << "Input matrix's elements: " << endl;
-            solveTask3(n, m);
-            cout << endl;
-            break;
-        case 4:
-            cout << "Input matrix's sizes: ";
-            cin >> n >> m;
-            cout << "Input matrix's elements: " << endl;
-            solveTask4(n, m);
-            cout << endl;
-            break;
-        case 5:
-            cout << "Input matrix's sizes: ";
-            cin >> n >> m;
-            cout << "Input matrix's elements: " << endl;
-            solveTask5(n, m);
-            cout << endl;
+    for (int taskNumber = 1; taskNumber <= 5; ++taskNumber) {
+        cout << "Task #" << taskNumber << endl;
+        switch (taskNumber) {
+            case 1:
+                cout << "Input matrix sizes: ";
+                cin >> n >> m;
+                cout << "Input matrix elements: " << endl;
+                solveTask1(m, n);
+                cout << endl;
+                break;
+            case 2:
+                cout << "Input matrix sizes: ";
+                cin >> n >> m;
+                cout << "Input matrix elements: " << endl;
+                solveTask2(n, m);
+                cout << endl;
+                break;
+            case 3:
+                cout << "Input matrix sizes: ";
+                cin >> n >> m;
+                cout << "Input matrix elements: " << endl;
+                solveTask3(n, m);
+                cout << endl;
+                break;
+            case 4:
+                cout << "Input matrix sizes: ";
+                cin >> n >> m;
+                cout << "Input matrix elements: " << endl;
+                solveTask4(n, m);
+                cout << endl;
+                break;
+            case 5:
+                cout << "Input matrix sizes: ";
+                cin >> n >> m;
+                cout << "Input matrix elements: " << endl;
+                solveTask5(n, m);
+                cout << endl;
+        }
     }
     return 0;
 }
