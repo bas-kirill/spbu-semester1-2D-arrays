@@ -1,5 +1,7 @@
 #include <iostream>
 #include <iomanip>
+#include <cstring>
+
 using namespace std;
 
 const int MAXN = 100;
@@ -20,42 +22,6 @@ void print(T a[][MAXN], int n, int m) {
             cout << setw(4) << a[i][j] << " ";
         }
         cout << endl;
-    }
-}
-
-void normalization(double a[][MAXN], int n, int m, int step) {
-    for (int row = step; row < n; ++row) {
-        double norm = a[row][step];
-        for (int col = step; col < m; ++col) {
-            if (norm != 0)
-                a[row][col] /= norm;
-        }
-    }
-}
-
-void subtracting(double a[][MAXN], int n, int m, int step) {
-    for (int row = step + 1; row < n; ++row) {
-        for (int col = step; col < m; ++col) {
-            a[row][col] -= a[step][col];
-        }
-    }
-}
-
-void gauss(double a[][MAXN], int n, int m) {
-    int step = 0;
-    while (step < n) {
-        double mx = -1;
-        int mxRowNumber;
-        for (int row = step; row < n; ++row) {
-            if (a[row][step] > mx) {
-                mx = a[row][step];
-                mxRowNumber = row;
-            }
-        }
-        swap(a[step], a[mxRowNumber]);
-        normalization(a, n, m, step);
-        subtracting(a, n, m, step);
-        ++step;
     }
 }
 
@@ -87,25 +53,62 @@ void swap(int *a, int *b, int size) {
     }
 }
 
-void solveTask1(int m, int n) {
-    int a[MAXN][MAXN], b[MAXN * MAXN];
-    input(a, m, n);
+void solveTask1(int choice) {
+    if (choice == 1) {
+        double** arr;
+        int n, m;
+        cout << "Input matrix sizes: ";
+        cin >> n >> m;
+        arr = new double* [n];
 
-    for (int i = 0; i < m; ++i)
-        for (int j = 0; j < n; ++j)
-            b[i * n + j] = a[i][j];
+        for (int i = 0; i < n; ++i)
+            arr[i] = new double[m];
 
-    for (int i = 0; i < n * m; ++i)
-        cout << b[i] << ' ';
-    cout << endl;
+        cout << "Input matrix elements: ";
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j)
+                cin >> arr[i][j];
 
-    for (int i = 0; i < m * n; ++i) {
-        int row = i / n;
-        b[i] = a[row][i - n * row];
+        int* a = new int[n * m];
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j)
+                a[i * m + j] = arr[i][j];
+
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j)
+                cout << arr[i][j] << " ";
+            cout << endl;
+        }
+
+        for (int i = 0; i < n * m; ++i)
+            cout << a[i] << " ";
     }
+    else {
+        double **arr;
+        int m, n;
+        cout << "Input matrix sizes: ";
+        cin >> m >> n;
+        arr = new double* [m];
+        for (int i = 0; i < m; i++)
+            arr[i] = new double[n];
 
-    for (int i = 0; i < n * m; ++i)
-        cout << b[i] << ' ';
+        cout << "Input array elements: ";
+        int* a = new int[m * n];
+        for (int i = 0; i < m * n; ++i)
+            cin >> a[i];
+
+        for (int i = 0; i < m * n; ++i)
+            arr[i / n][i % n] = a[i];
+
+        for (int i = 0; i < n * m; ++i)
+            cout << a[i] << " ";
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j)
+                cout << arr[i][j] << " ";
+            cout << endl;
+        }
+    }
 }
 
 void fillSymm(int a[][MAXN], int n, int m) {
@@ -123,16 +126,6 @@ void fillSymm(int a[][MAXN], int n, int m) {
 }
 
 void fillSnake(int a[][MAXN], int n, int m) {
-    // N x N
-//    for (int row = 0; row < n; ++row) {
-//        if (row % 2 == 0)
-//            for (int col = 0; col < m; ++col)
-//                a[row][col] = row * n + col;
-//        else
-//            for (int col = m - 1; col >= 0; --col)
-//                a[row][col] = row * n + (m - col - 1);
-//    }
-
     int currentNumber = 0;
     int row = 0, col = 0;
     int currentDir = 1;
@@ -169,10 +162,58 @@ void fillSnake(int a[][MAXN], int n, int m) {
     a[n - 1][m - 1] = currentNumber;
 }
 
-void initZeros(int a[][MAXN], int n, int m) {
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < m; ++j)
-            a[i][j] = 0;
+void fillSpiral(int a[][MAXN], int n, int m) {
+    int currentNumber = 1;
+    int row = 0, col = 0;
+    int step = 0;
+    while (currentNumber <= n * m) {
+        while (col < m - step) {
+            a[row][col++] = currentNumber++;
+
+        }
+
+        --col;
+
+        if (row == n/2 && col == m/2)
+            break;
+
+        ++row;
+
+        while (row < n - step) {
+            a[row++][col] = currentNumber++;
+        }
+
+        --row;
+
+        if (row == n/2 && col == m/2)
+            break;
+
+        --col;
+
+        while (col >= step) {
+            a[row][col--] = currentNumber++;
+        }
+
+        ++step;
+
+        ++col;
+
+        if (row == n/2 && col == m/2)
+            break;
+
+        --row;
+
+        while (row >= step) {
+            a[row--][col] = currentNumber++;
+        }
+
+        ++row;
+
+        if (row == n/2 && col == m/2)
+            break;
+
+        ++col;
+    }
 }
 
 void solveTask2(int n, int m) {
@@ -180,14 +221,14 @@ void solveTask2(int n, int m) {
         exit(0);
 
     int a[MAXN][MAXN];
-    initZeros(a, n, m);
+    memset(a, 0, n * m);
 
     fillSymm(a, n, m);
     print(a, n, m);
 
     cout << endl;
-
-    fillSnake(a, n, m);
+    memset(a, 0, n * m);
+    fillSpiral(a, n, m);
     print(a, n, m);
 }
 
@@ -279,33 +320,60 @@ void solveTask4(int n, int m) {
     }
 }
 
-void solveTask5(int n, int m) {
-    if (m > MAXN)
-        exit(-1);
-
-    double a[MAXN][MAXN];
-    input(a, n, m);
-    print(a, n, m);
-    gauss(a, n, m);
-    cout << endl;
-    print(a, n, m);
-    double *ans = getAns(a, n, m);
-    cout << "Answer: ";
-    for (int i = 0; i < n; ++i) {
-        cout << ans[i] << " ";
+void gauss(double** a, int n) {
+    double k;
+    for (int i = 0; i < n; i++) {
+        k = a[i][i];
+        for (int j = i; j < n + 1; j++) {
+            a[i][j] /= k;
+        }
+        for (int c = i + 1; c < n; c++) {
+            double m = a[c][i];
+            for (int g = i; g < n + 1; g++) {
+                a[c][g] -= a[i][g] * m;
+            }
+        }
     }
+}
+
+void solveTask5(int n) {
+    double **a;
+    a = new double* [n];
+    for (int i = 0; i < n; i++) {
+        a[i] = new double [n + 1];
+    }
+
+    cout << "Input matrix elements: " << endl;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n + 1; ++j) {
+            cin >> a[i][j];
+        }
+    }
+
+    gauss(a, n);
+
+    double k;
+    for (int i = n - 1; i >= 0; --i) {
+        for (int j = i; j > 0; --j) {
+            double m = a[j - 1][i];
+            for (int g = i; g < n + 1; ++g) {
+                a[j - 1][g] -= a[i][g] * m;
+            }
+        }
+    }
+
+    cout << "Answer: " << a[0][3] << " " << a[1][3] << " " << a[2][3] << endl;
 }
 
 int main() {
     int n, m;
-    for (int taskNumber = 1; taskNumber <= 5; ++taskNumber) {
+    for (int taskNumber = 5; taskNumber <= 5; ++taskNumber) {
         cout << "Task #" << taskNumber << endl;
         switch (taskNumber) {
             case 1:
-                cout << "Input matrix sizes: ";
-                cin >> n >> m;
-                cout << "Input matrix elements: " << endl;
-                solveTask1(m, n);
+                cout << endl << "Input choice: k = 1 - a[][] -> b[], b[] -> a[][]: ";
+                int choice; cin >> choice;
+                solveTask1(choice);
                 cout << endl;
                 break;
             case 2:
@@ -330,10 +398,10 @@ int main() {
                 cout << endl;
                 break;
             case 5:
-                cout << "Input matrix sizes: ";
-                cin >> n >> m;
-                cout << "Input matrix elements: " << endl;
-                solveTask5(n, m);
+                int n;
+                cout << "Input matrix size: ";
+                cin >> n;
+                solveTask5(n);
                 cout << endl;
         }
     }
