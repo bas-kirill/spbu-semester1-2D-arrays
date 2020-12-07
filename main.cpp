@@ -5,9 +5,10 @@
 using namespace std;
 
 const int MAXN = 100;
+const double eps = 1e-3;
 
-template <typename T>
-void input(T a[][MAXN], int n, int m) {
+template <typename tmp>
+void input(tmp a[][MAXN], int n, int m) {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
             cin >> a[i][j];
@@ -15,8 +16,8 @@ void input(T a[][MAXN], int n, int m) {
     }
 }
 
-template <typename T>
-void print(T a[][MAXN], int n, int m) {
+template <typename tmp>
+void print(tmp a[][MAXN], int n, int m) {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
             cout << setw(4) << a[i][j] << " ";
@@ -42,9 +43,9 @@ double* getAns(double a[][MAXN], int n, int m) {
 }
 
 void swap(int *a, int *b) {
-    int *t = a;
+    int *tmp = a;
     b = a;
-    a = t;
+    a = tmp;
 }
 
 void swap(int *a, int *b, int size) {
@@ -89,7 +90,7 @@ void solveTask1(int choice) {
         cout << "Input matrix sizes: ";
         cin >> m >> n;
         arr = new double* [m];
-        for (int i = 0; i < m; i++)
+        for (int i = 0; i < m; ++i)
             arr[i] = new double[n];
 
         cout << "Input array elements: ";
@@ -320,56 +321,202 @@ void solveTask4(int n, int m) {
     }
 }
 
-void gauss(double** a, int n) {
-    double k;
-    for (int i = 0; i < n; i++) {
-        k = a[i][i];
-        for (int j = i; j < n + 1; j++) {
-            a[i][j] /= k;
-        }
-        for (int c = i + 1; c < n; c++) {
-            double m = a[c][i];
-            for (int g = i; g < n + 1; g++) {
-                a[c][g] -= a[i][g] * m;
+double* gauss(double **a, double *y, int n) {
+    double *coef, mx, tmp;
+    coef = (double*) malloc(n * sizeof(double));
+
+    int k = 0, idx;
+    while (k < n) {
+        mx = abs(a[k][k]);
+        idx = k;
+        for (int i = k + 1; i < n; ++i) {
+            if (abs(a[i][k]) > mx) {
+                mx = abs(a[i][k]);
+                idx = i;
             }
         }
+        
+        for (int j = 0; j < n; ++j)  {
+            tmp = a[k][j];
+            a[k][j] = a[idx][j];
+            a[idx][j] = tmp;
+        }
+
+        tmp = y[k];
+        y[k] = y[idx];
+        y[idx] = tmp;
+        
+        for (int i = k; i < n; ++i) {
+            double tmp1 = a[i][k];
+            if (abs(tmp1) < eps) continue;
+            
+            for (int j = 0; j < n; ++j) {
+                a[i][j] = a[i][j] / tmp1;
+            }
+            
+            y[i] = y[i] / tmp1;
+            if (i == k)  continue;
+            for (int j = 0; j < n; ++j) {
+                a[i][j] = a[i][j] - a[k][j];
+            }
+            y[i] = y[i] - y[k];
+        }
+        ++k;
     }
+    
+    for (k = n - 1; k >= 0; --k) {
+        coef[k] = y[k];
+        for (int i = 0; i < k; ++i) {
+            y[i] = y[i] - a[i][k] * coef[k];
+        }
+    }
+    
+    return coef;
 }
 
 void solveTask5(int n) {
     double **a;
     a = new double* [n];
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; ++i) {
         a[i] = new double [n + 1];
     }
-
+    double *b = (double*) malloc(n * sizeof(double));
     cout << "Input matrix elements: " << endl;
     for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n + 1; ++j) {
+        for (int j = 0; j < n; ++j) {
             cin >> a[i][j];
         }
+        cin >> b[i];
     }
 
-    gauss(a, n);
+    double *ans = gauss(a, b, n);
 
-    double k;
-    for (int i = n - 1; i >= 0; --i) {
-        for (int j = i; j > 0; --j) {
-            double m = a[j - 1][i];
-            for (int g = i; g < n + 1; ++g) {
-                a[j - 1][g] -= a[i][g] * m;
+    bool first = false;
+    for (int i = 0; i < n; ++i) {
+        if (first) {
+            cout << "; ";
+            first = false;
+        }
+        first = true;
+        cout << "x[" << i << "]=" << ans[i];
+    }
+}
+
+double *extGauss(double **a, double **coef, int n) {
+    int k = 0, idx;
+    double m, tmp, tmp1;
+    while (k < n) {
+        m = a[k][k];
+        if (m == 0) {
+            for (int i = 0; i < n; ++i) {
+                if (a[i][k] != 0) {
+                    idx = i;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < n; ++i) {
+                tmp = a[k][i];
+                tmp1 = coef[k][i];
+                a[k][i] = a[idx][i];
+                coef[k][i] = coef[idx][i];
+                a[idx][i] = tmp;
+                coef[idx][i] = tmp1;
+            }
+
+            m = a[k][k];
+        }
+
+        for (int i = 0; i < n; ++i) {
+            a[k][i] = a[k][i] / m;
+            coef[k][i] = coef[k][i] / m;
+        }
+
+        for (int i = k + 1; i < n; ++i) {
+            m = a[i][k];
+            for (int j = 0; j < n; ++j) {
+                a[i][j] = a[i][j] - a[k][j] * m;
+                coef[i][j] = coef[i][j] - coef[k][j] * m;
+            }
+        }
+
+        ++k;
+    }
+    for (k = n - 1; k > 0; --k) {
+        for (int j = k - 1; j >= 0; --j) {
+            m = a[j][k];
+            a[j][k] = a[j][k] - a[k][k] * m;
+            for (int i = n - 1; i >= 0; --i) {
+                coef[j][i] = coef[j][i] - coef[k][i] * m;
             }
         }
     }
 
-    cout << "Answer: " << a[0][3] << " " << a[1][3] << " " << a[2][3] << endl;
+    return *coef;
+}
+
+void solveTask6(int n) {
+    double **a = (double**) malloc(n * sizeof(double*));
+    double **x = (double**) malloc(n * sizeof(double*));
+    double **y = (double**) malloc(n * sizeof(double*));
+
+    cout << "Input matrix elements: ";
+    for (int i = 0; i < n; ++i) {
+        x[i] = (double*) malloc(n * sizeof(double));
+        a[i] = (double*) malloc(n * sizeof(double));
+        for (int j = 0; j < n; ++j) {
+            cin >> a[i][j];
+            x[i][j] = a[i][j];
+        }
+    }
+    
+    for (int i = 0; i < n; ++i) {
+        y[i] = (double*) malloc(n * sizeof(double));
+        for (int j = 0; j < n; ++j)
+            y[i][j] = (i == j) ? 1 : 0;
+    }
+
+    extGauss(a, y, n);
+    cout.precision(4);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j)
+            cout << fixed << y[i][j] << " ";
+        cout << endl;
+    }
+    
+    cout << endl;
+    double **c = new double *[n];
+    for (int i = 0; i < n; ++i) {
+        c[i] = new double[n];
+        for (int j = 0; j < n; ++j) {
+            c[i][j] = 0;
+            for (int k = 0; k < n; k++) {
+                c[i][j] += x[i][k] * y[k][j];
+            }
+        }
+    }
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (c[i][j] < eps) 
+                c[i][j] = 0;
+            cout << fixed << c[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void solveTask7(int n) {
+    // TO-DO
 }
 
 int main() {
+    int i = 1;
     int n, m;
-    for (int taskNumber = 5; taskNumber <= 5; ++taskNumber) {
-        cout << "Task #" << taskNumber << endl;
-        switch (taskNumber) {
+    while (i) {
+        cin >> i;
+        cout << "Task #" << i << endl;
+        switch (i) {
             case 1:
                 cout << endl << "Input choice: k = 1 - a[][] -> b[], b[] -> a[][]: ";
                 int choice; cin >> choice;
@@ -403,6 +550,14 @@ int main() {
                 cin >> n;
                 solveTask5(n);
                 cout << endl;
+            case 6:
+                cout << "Input matrix sizes: ";
+                cin >> n;
+                solveTask6(n);
+            case 7:
+                cout << "Input matrix size: ";
+                cin >> n;
+                solveTask7(n);
         }
     }
     return 0;
